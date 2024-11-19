@@ -158,7 +158,6 @@ class MyApp extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: burgundy, width: 1),
       ),
       child: Column(
         children: [
@@ -186,17 +185,24 @@ class MyApp extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           // 요일 헤더
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text("일", style: TextStyle(color: Colors.red)),
-              Text("월"),
-              Text("화"),
-              Text("수"),
-              Text("목"),
-              Text("금"),
-              Text("토", style: TextStyle(color: Colors.blue)),
-            ],
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: burgundy, width: 0.5),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Expanded(child: Center(child: Text("일", style: TextStyle(color: Colors.red)))),
+                Expanded(child: Center(child: Text("월"))),
+                Expanded(child: Center(child: Text("화"))),
+                Expanded(child: Center(child: Text("수"))),
+                Expanded(child: Center(child: Text("목"))),
+                Expanded(child: Center(child: Text("금"))),
+                Expanded(child: Center(child: Text("토", style: TextStyle(color: Colors.blue)))),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           // 날짜 그리드
@@ -205,13 +211,16 @@ class MyApp extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
+                crossAxisSpacing: 0, // 셀 간격 0
+                mainAxisSpacing: 0, // 셀 간격 0
               ),
               itemCount: 31, // 날짜 수
               itemBuilder: (context, index) {
                 return Container(
                   alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: burgundy, width: 0.5), // 날짜 셀 테두리
+                  ),
                   child: Text(
                     '${index + 1}',
                     style: GoogleFonts.beVietnamPro(
