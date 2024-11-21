@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heroessaber/pages/moredetailpage.dart';
 
 const Color burgundy = Color(0xFF570514);
 
-void main() {
-  runApp(MaterialApp(
-    theme: ThemeData(
-      primaryColor: burgundy,
-      textTheme: GoogleFonts.beVietnamProTextTheme(),
-    ),
-    home: const SearchResultsPage(),
-  ));
-}
-
 class SearchResultsPage extends StatelessWidget {
-  const SearchResultsPage({super.key});
+  final String query;
+
+  const SearchResultsPage({super.key, required this.query});
 
   @override
-  Widget build(BuildContext context) { // 사진 정렬 나중에 개빡치네
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -78,18 +71,20 @@ class SearchResultsPage extends StatelessWidget {
                           children: [
                             Image.asset(
                               'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
-                              height: 100,
+                              height: 180,
+                              width: 100,
                             ),
                             const SizedBox(width: 150),
                             Image.asset(
                               'assets/player_img.png', // 선수 이미지
-                              width: 100,
+                              width: 180,
                               height: 180,
                             ),
-                            const SizedBox(width:150),
+                            const SizedBox(width: 150),
                             Image.asset(
                               'assets/kiwoom_logo.png', // 우측 로고 이미지
                               height: 80,
+                              width: 220,
                             ),
                           ],
                         ),
@@ -111,9 +106,34 @@ class SearchResultsPage extends StatelessWidget {
                   // 상세 분석 섹션
                   _buildSectionTitle('상세 분석'),
                   _buildDetailedAnalysisTable(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 300), 
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          // 새로운 페이지로 이동
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const MoreDetailsPage()),
+                          );
+                        },
+                        child: Text(
+                          '더보기 >>',
+                          style: GoogleFonts.beVietnamPro(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline, // 밑줄 추가
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 50),
                   _buildSectionTitle('추가 데이터'),
-                  _buildSideBySideTables(),
+                  _buildSideBySideTables(context),
                 ],
               ),
             ),
@@ -234,17 +254,25 @@ class SearchResultsPage extends StatelessWidget {
     );
   }
 
-// 5x5 표
+  // 5x5 표
   Widget _build5x5Table() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       child: Container(
-        width: 80,
+        width: 190,
+        height: 190, // 높이 절반으로 줄임
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: burgundy, width: 1),
         ),
         child: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(1),
+            2: FlexColumnWidth(1),
+            3: FlexColumnWidth(1),
+            4: FlexColumnWidth(1),
+          },
           border: TableBorder.all(color: burgundy, width: 0.5),
           children: [
             for (int i = 0; i < 5; i++)
@@ -252,7 +280,7 @@ class SearchResultsPage extends StatelessWidget {
                 children: List.generate(
                   5,
                   (j) => Container(
-                    height: 70,
+                    height: 38, // 각 셀의 높이를 절반으로 줄임
                     alignment: Alignment.center,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -260,16 +288,16 @@ class SearchResultsPage extends StatelessWidget {
                         Text(
                           '값 1', // 위 값
                           style: GoogleFonts.beVietnamPro(
-                            fontSize: 14,
+                            fontSize: 7, // 폰트 크기 절반으로 줄임
                             color: burgundy,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 5), // 위아래 값 간 간격
+                        const SizedBox(height: 2.5), // 위아래 값 간 간격 절반으로 줄임
                         Text(
                           '값 2', // 아래 값
                           style: GoogleFonts.beVietnamPro(
-                            fontSize: 12,
+                            fontSize: 6, // 폰트 크기 절반으로 줄임
                             color: Colors.black,
                           ),
                         ),
@@ -285,25 +313,30 @@ class SearchResultsPage extends StatelessWidget {
   }
 
   // 표 두 개를 나란히 배치
-  Widget _buildSideBySideTables() {
+  Widget _buildSideBySideTables(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 첫 번째 표
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _build5x5Table(),
-            ),
-          ),
-          // 두 번째 표
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _build5x5Table(),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // 첫 번째 표
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: _build5x5Table(),
+                ),
+              ),
+              // 두 번째 표
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: _build5x5Table(),
+                ),
+              ),
+            ],
           ),
         ],
       ),
