@@ -62,16 +62,10 @@ class MoreDetailsPage extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const SizedBox(height: 100), // 이미지와 내용을 아래로 이동
+                        const SizedBox(height: 50), // 이미지와 내용을 아래로 이동
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
-                              height: 180,
-                              width: 100,
-                            ),
-                            const SizedBox(width: 150),
                             Image.asset(
                               'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
                               height: 150,

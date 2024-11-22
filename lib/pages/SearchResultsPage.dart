@@ -264,87 +264,83 @@ class SearchResultsPage extends StatelessWidget {
 
   // 5x5 표
   Widget _build5x5Table() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-      child: Container(
-        width: 190,
-        height: 190, // 높이 절반으로 줄임
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: burgundy, width: 1),
-        ),
-        child: Table(
-          columnWidths: const {
-            0: FlexColumnWidth(1),
-            1: FlexColumnWidth(1),
-            2: FlexColumnWidth(1),
-            3: FlexColumnWidth(1),
-            4: FlexColumnWidth(1),
-          },
-          border: TableBorder.all(color: burgundy, width: 0.5),
-          children: [
-            for (int i = 0; i < 5; i++)
-              TableRow(
-                children: List.generate(
-                  5,
-                  (j) => Container(
-                    height: 38, // 각 셀의 높이를 절반으로 줄임
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '값 1', // 위 값
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 7, // 폰트 크기 절반으로 줄임
-                            color: burgundy,
-                            fontWeight: FontWeight.bold,
-                          ),
+    const double tableSize = 380; // 테이블 전체 크기
+    const double cellSize = tableSize / 5; // 각 셀의 크기 (5x5 테이블)
+
+    return Container(
+      width: tableSize,
+      height: tableSize,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: burgundy, width: 1),
+      ),
+      child: Table(
+        columnWidths: const {
+          0: FixedColumnWidth(cellSize),
+          1: FixedColumnWidth(cellSize),
+          2: FixedColumnWidth(cellSize),
+          3: FixedColumnWidth(cellSize),
+          4: FixedColumnWidth(cellSize),
+        },
+        border: TableBorder.all(color: burgundy, width: 0.5),
+        children: [
+          for (int i = 0; i < 5; i++)
+            TableRow(
+              children: List.generate(
+                5,
+                (j) => Container(
+                  width: cellSize, // 셀 너비 고정
+                  height: cellSize, // 셀 높이 고정
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '값 1',
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          color: burgundy,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 2.5), // 위아래 값 간 간격 절반으로 줄임
-                        Text(
-                          '값 2', // 아래 값
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 6, // 폰트 크기 절반으로 줄임
-                            color: Colors.black,
-                          ),
+                      ),
+                      const SizedBox(height: 2.5),
+                      Text(
+                        '값 2',
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 12,
+                          color: Colors.black,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
+
 
   // 표 두 개를 나란히 배치
   Widget _buildSideBySideTables(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // 첫 번째 표
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _build5x5Table(),
-                ),
-              ),
-              // 두 번째 표
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _build5x5Table(),
-                ),
-              ),
-            ],
+          // 첫 번째 표
+          SizedBox(
+            width: 380, // 고정된 너비
+            height: 380, // 고정된 높이
+            child: _build5x5Table(),
+          ),
+          const SizedBox(width: 180), // 표 사이 간격
+          // 두 번째 표
+          SizedBox(
+            width: 380, // 고정된 너비
+            height: 380, // 고정된 높이
+            child: _build5x5Table(),
           ),
         ],
       ),
