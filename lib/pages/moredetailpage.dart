@@ -73,15 +73,21 @@ class MoreDetailsPage extends StatelessWidget {
                             ),
                             const SizedBox(width: 150),
                             Image.asset(
-                              'assets/player_img.png', // 선수 이미지
-                              width: 180,
-                              height: 180,
+                              'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
+                              height: 150,
+                              width: 150,
                             ),
-                            const SizedBox(width: 150),
+                            const SizedBox(width: 250),
+                            Image.asset(
+                              'assets/player_img.png', // 선수 이미지
+                              width: 250,
+                              height: 250,
+                            ),
+                            const SizedBox(width: 200),
                             Image.asset(
                               'assets/kiwoom_logo.png', // 우측 로고 이미지
-                              height: 80,
-                              width: 220,
+                              height: 200,
+                              width: 200,
                             ),
                           ],
                         ),

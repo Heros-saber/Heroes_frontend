@@ -26,7 +26,7 @@ class SearchResultsPage extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Navigator.pushNamed(context, '/mainpage');
-                  },  
+                  },
                   child: Image.asset(
                     'assets/logo.png', // 로고 이미지 파일 경로
                     height: 50,
@@ -70,26 +70,26 @@ class SearchResultsPage extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const SizedBox(height: 100), // 이미지와 내용을 아래로 이동
+                        const SizedBox(height: 50), // 이미지와 내용을 아래로 이동
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset(
                               'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
-                              height: 180,
-                              width: 100,
+                              height: 150,
+                              width: 150,
                             ),
-                            const SizedBox(width: 150),
+                            const SizedBox(width: 250),
                             Image.asset(
                               'assets/player_img.png', // 선수 이미지
-                              width: 180,
-                              height: 180,
+                              width: 250,
+                              height: 250,
                             ),
-                            const SizedBox(width: 150),
+                            const SizedBox(width: 200),
                             Image.asset(
                               'assets/kiwoom_logo.png', // 우측 로고 이미지
-                              height: 80,
-                              width: 220,
+                              height: 200,
+                              width: 200,
                             ),
                           ],
                         ),
@@ -113,7 +113,7 @@ class SearchResultsPage extends StatelessWidget {
                   _buildDetailedAnalysisTable(),
                   const SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.only(right: 300), 
+                    padding: const EdgeInsets.only(right: 300),
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: InkWell(
