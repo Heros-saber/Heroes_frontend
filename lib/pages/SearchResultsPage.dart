@@ -26,7 +26,7 @@ class SearchResultsPage extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Navigator.pushNamed(context, '/mainpage');
-                  },
+                  },  
                   child: Image.asset(
                     'assets/logo.png', // 로고 이미지 파일 경로
                     height: 50,
