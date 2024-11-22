@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/searchresultspage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -259,6 +260,9 @@ class MainPage extends StatelessWidget {
   // 테이블 헤더 생성
   TableRow _buildTableHeader(List<String> headers) {
     return TableRow(
+      decoration: BoxDecoration(
+      color: burgundy.withOpacity(0.1), // 헤더 배경색 설정
+      ),
       children: headers
           .map(
             (header) => Padding(
@@ -342,19 +346,27 @@ class MainPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildSocialMediaButton(Icons.language, '@kiwoom_heroes'),
+          _buildSocialMediaButton(Icons.language, 'kiwoom_heroes', 'https://heroesbaseball.co.kr/index.do'),
           const SizedBox(width: 30),
-          _buildSocialMediaButton(Icons.camera_alt, '@kiwoom_heroes'),
+          _buildSocialMediaButton(Icons.camera_alt, '@kiwoom_heroes', 'https://www.instagram.com/heroesbaseballclub/'),
           const SizedBox(width: 30),
-          _buildSocialMediaButton(Icons.play_circle_fill, 'Kiwoom Heroes'),
+          _buildSocialMediaButton(Icons.play_circle_fill, 'Kiwoom Heroes', 'https://www.youtube.com/@heroesbaseballclub'),
         ],
       ),
     );
   }
 
   // 소셜 미디어 버튼
-  Widget _buildSocialMediaButton(IconData icon, String text) {
-    return Container(
+  Widget _buildSocialMediaButton(IconData icon, String text, String url) {
+    return InkWell(
+      onTap: () async {
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+      },
+      child: Container(
       width: 301,
       height: 58,
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -364,19 +376,20 @@ class MainPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: burgundy, size: 20),
+          Icon(icon, color: Colors.black, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.beVietnamPro(
                 fontSize: 14,
-                color: burgundy,
+                color: Colors.black,
               ),
             ),
           ),
         ],
       ),
+    ),
     );
   }
 }

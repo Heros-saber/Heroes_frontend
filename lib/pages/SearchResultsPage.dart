@@ -214,6 +214,9 @@ class SearchResultsPage extends StatelessWidget {
   // 테이블 헤더 생성
   TableRow _buildTableHeader(List<String> headers) {
     return TableRow(
+      decoration: BoxDecoration(
+      color: burgundy.withOpacity(0.1), // 헤더 배경색 설정
+      ),
       children: headers
           .map(
             (header) => Padding(
