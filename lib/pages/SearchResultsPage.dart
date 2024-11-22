@@ -23,9 +23,14 @@ class SearchResultsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // 로고
-                Image.asset(
-                  'assets/logo.png', // 로고 이미지 파일 경로
-                  height: 50,
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/mainpage');
+                  },
+                  child: Image.asset(
+                    'assets/logo.png', // 로고 이미지 파일 경로
+                    height: 50,
+                  ),
                 ),
                 // 검색창
                 SizedBox(

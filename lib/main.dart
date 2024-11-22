@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/searchresultspage.dart';
+import 'package:heroessaber/pages/gameresultpage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -94,21 +95,44 @@ class MainPage extends StatelessWidget {
             const Divider(  
               color: burgundy,
               thickness: 1,
-              height: 31,
             ),
             // 나머지 콘텐츠
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 20),
                     Image.asset(
                       'assets/wallpaper.png',
                       fit: BoxFit.cover,
                       width: 948,
                       height: 524,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 40),
+                    Padding(
+                    padding: const EdgeInsets.only(right: 300), 
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          // 새로운 페이지로 이동
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const GameResultPage()),
+                          );
+                        },
+                        child: Text(
+                          '더보기 >>',
+                          style: GoogleFonts.beVietnamPro(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -180,7 +204,7 @@ class MainPage extends StatelessWidget {
   // 섹션 타이틀
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 300),
+      padding: const EdgeInsets.symmetric(horizontal: 280, vertical: 20),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
