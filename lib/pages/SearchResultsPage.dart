@@ -111,10 +111,6 @@ class SearchResultsPage extends StatelessWidget {
                   ),
                   _buildShadowDivider(),
                   const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
-                  // 상세 분석 섹션
-                  _buildSectionTitle('상세 분석'),
-                  _buildDetailedAnalysisTable(),
-                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.only(right: 300),
                     child: Align(
@@ -133,12 +129,15 @@ class SearchResultsPage extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            decoration: TextDecoration.underline, // 밑줄 추가
                           ),
                         ),
                       ),
                     ),
                   ),
+                  // 상세 분석 섹션
+                  _buildSectionTitle('상세 분석'),
+                  _buildDetailedAnalysisTable(),
+                  const SizedBox(height: 10),
                   const SizedBox(height: 50),
                   _buildSectionTitle('추가 데이터'),
                   _buildSideBySideTables(context),
@@ -338,7 +337,7 @@ class SearchResultsPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDynamic5x5Table(),
-        const SizedBox(width: 20),
+        const SizedBox(width: 200),
         _buildDynamic5x5Table(),
       ],
     );
