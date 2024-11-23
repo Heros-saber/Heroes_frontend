@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/moredetailpage.dart';
 
 const Color burgundy = Color(0xFF570514);
+const Color coldColor = Color(0xFF90CAF9); // 차가운 색 (파란색 계열)
+const Color hotColor = Color(0xFFEF5350); // 뜨거운 색 (빨간색 계열)
 
 class SearchResultsPage extends StatelessWidget {
   final String query;
@@ -221,7 +223,7 @@ class SearchResultsPage extends StatelessWidget {
   TableRow _buildTableHeader(List<String> headers) {
     return TableRow(
       decoration: BoxDecoration(
-      color: burgundy.withOpacity(0.1), // 헤더 배경색 설정
+        color: burgundy.withOpacity(0.1), // 헤더 배경색 설정
       ),
       children: headers
           .map(
@@ -263,18 +265,35 @@ class SearchResultsPage extends StatelessWidget {
     );
   }
 
-  // 5x5 표
-  Widget _build5x5Table() {
+// 5x5 표 (동적 색상 변경, 테두리 유지)
+  Widget _buildDynamic5x5Table() {
     const double tableSize = 380; // 테이블 전체 크기
-    const double cellSize = tableSize / 5; // 각 셀의 크기 (5x5 테이블)
+    const double cellSize = tableSize / 5; // 각 셀 크기
+
+    // 더미 데이터
+    final List<List<double>> data = [
+      [0.208, 0.318, 0.389, 0.429, 0.338],
+      [0.271, 0.360, 0.457, 0.500, 0.370],
+      [0.250, 0.370, 0.358, 0.338, 0.318],
+      [0.338, 0.360, 0.429, 0.389, 0.318],
+      [0.208, 0.250, 0.271, 0.338, 0.308],
+    ];
+
+    // 배경색 계산 (핫-콜드 존)
+    Color _getBackgroundColor(double value) {
+      if (value < 0.35) {
+        // Cold Zone (blue)
+        return coldColor;
+      } else {
+        // Hot Zone (red) with intensity scaling for higher values
+        double intensity = (value - 0.35) / (0.5 - 0.35); // Scale intensity for hot zone
+        return Color.lerp(const Color.fromARGB(255, 247, 192, 192), hotColor, intensity)!;
+      }
+    }
 
     return Container(
       width: tableSize,
       height: tableSize,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: burgundy, width: 1),
-      ),
       child: Table(
         columnWidths: const {
           0: FixedColumnWidth(cellSize),
@@ -283,36 +302,26 @@ class SearchResultsPage extends StatelessWidget {
           3: FixedColumnWidth(cellSize),
           4: FixedColumnWidth(cellSize),
         },
-        border: TableBorder.all(color: burgundy, width: 0.5),
+        border: TableBorder.all(color: burgundy, width: 0.5), // 각 셀의 테두리
         children: [
           for (int i = 0; i < 5; i++)
             TableRow(
               children: List.generate(
                 5,
                 (j) => Container(
-                  width: cellSize, // 셀 너비 고정
-                  height: cellSize, // 셀 높이 고정
+                  width: cellSize, // 셀 크기 유지
+                  height: cellSize,
                   alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '값 1',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 14,
-                          color: burgundy,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2.5),
-                      Text(
-                        '값 2',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                  decoration: BoxDecoration(
+                    color: _getBackgroundColor(data[i][j]), // 배경색만 변경
+                  ),
+                  child: Text(
+                    data[i][j].toStringAsFixed(3), // 값 표시
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -323,44 +332,30 @@ class SearchResultsPage extends StatelessWidget {
   }
 
 
-  // 표 두 개를 나란히 배치
+  // 표 두 개 나란히
   Widget _buildSideBySideTables(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
-        children: [
-          // 첫 번째 표
-          SizedBox(
-            width: 380, // 고정된 너비
-            height: 380, // 고정된 높이
-            child: _build5x5Table(),
-          ),
-          const SizedBox(width: 180), // 표 사이 간격
-          // 두 번째 표
-          SizedBox(
-            width: 380, // 고정된 너비
-            height: 380, // 고정된 높이
-            child: _build5x5Table(),
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildDynamic5x5Table(),
+        const SizedBox(width: 20),
+        _buildDynamic5x5Table(),
+      ],
     );
   }
 
-  // 구분선
+  // 그림자 구분선
   Widget _buildShadowDivider() {
     return Container(
-      // margin: const EdgeInsets.symmetric(vertical: 10), // 구분선 위아래 여백
-      height: 1, // 구분선 높이
+      height: 1,
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.4), // 구분선의 기본 색상
+        color: Colors.grey.withOpacity(0.4),
         boxShadow: [
           BoxShadow(
-            color: burgundy.withOpacity(0.3), // 그림자 색상
-            offset: const Offset(0, 3), // 그림자 위치 (아래쪽으로 3px 이동)
-            blurRadius: 6, // 그림자 흐림 효과
-            spreadRadius: 0, // 그림자의 확산 정도
+            color: burgundy.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),

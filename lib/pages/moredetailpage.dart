@@ -198,14 +198,6 @@ class MoreDetailsPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 2.5),
-                      Text(
-                        '값 2',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
                     ],
                   ),
                 ),
