@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/searchresultspage.dart';
-import 'package:heroessaber/pages/gameresultpage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   runApp(MyApp());
@@ -98,41 +98,120 @@ class MainPage extends StatelessWidget {
             ),
             // 나머지 콘텐츠
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Image.asset(
-                      'assets/wallpaper.png',
-                      fit: BoxFit.cover,
-                      width: 948,
-                      height: 524,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 45),
+                  Image.asset(
+                    'assets/wallpaper.png',
+                    fit: BoxFit.cover,
+                    width: 948,
+                    height: 524,
+                  ),
+                  const SizedBox(height: 50),
+                  Container(
+                    width: 948,
+                    height: 400,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: burgundy, width: 1),
                     ),
-                    const SizedBox(height: 40),
-                    Padding(
-                    padding: const EdgeInsets.only(right: 300), 
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: InkWell(
-                        onTap: () {
-                          // 새로운 페이지로 이동
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const GameResultPage()),
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2023, 1, 1),
+                      lastDay: DateTime.utc(2024, 12, 31),
+                      focusedDay: DateTime.now(),
+                      calendarFormat: CalendarFormat.month,
+                      onDaySelected: (selectedDay, focusedDay) {
+                        // 선택한 날짜에 대한 동작 추가 가능
+                      },
+                      headerStyle: HeaderStyle(
+                        formatButtonVisible: false,
+                        titleCentered: true,
+                        titleTextStyle: GoogleFonts.beVietnamPro(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: burgundy,
+                        ),
+                        leftChevronIcon: Icon(
+                          Icons.chevron_left,
+                          color: burgundy,
+                          size: 24,
+                        ),
+                        rightChevronIcon: Icon(
+                          Icons.chevron_right,
+                          color: burgundy,
+                          size: 24,
+                        ),
+                      ),
+                      daysOfWeekStyle: DaysOfWeekStyle(
+                        weekdayStyle: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                        weekendStyle: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: burgundy.withOpacity(1.0),
+                          shape: BoxShape.circle,
+                        ),
+                        todayTextStyle: GoogleFonts.beVietnamPro(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        defaultTextStyle: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                        weekendTextStyle: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          color: Colors.red,
+                        ),
+                        outsideDaysVisible: false,
+                        cellMargin: const EdgeInsets.symmetric(vertical: 8), // 세로 간격 조정
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, focusedDay) {
+                          return Center(
+                            child: Text(
+                              '${day.day}', // 날짜 표시
+                              style: GoogleFonts.beVietnamPro(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
                           );
                         },
-                        child: Text(
-                          '더보기 >>',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
+                        todayBuilder: (context, day, focusedDay) {
+                          return Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: burgundy,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                '${day.day}',
+                                style: GoogleFonts.beVietnamPro(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 50),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -107,6 +107,7 @@ class SearchResultsPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                  _buildShadowDivider(),
                   const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
                   // 상세 분석 섹션
                   _buildSectionTitle('상세 분석'),
@@ -341,6 +342,25 @@ class SearchResultsPage extends StatelessWidget {
             width: 380, // 고정된 너비
             height: 380, // 고정된 높이
             child: _build5x5Table(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 구분선
+  Widget _buildShadowDivider() {
+    return Container(
+      // margin: const EdgeInsets.symmetric(vertical: 10), // 구분선 위아래 여백
+      height: 1, // 구분선 높이
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.4), // 구분선의 기본 색상
+        boxShadow: [
+          BoxShadow(
+            color: burgundy.withOpacity(0.3), // 그림자 색상
+            offset: const Offset(0, 3), // 그림자 위치 (아래쪽으로 3px 이동)
+            blurRadius: 6, // 그림자 흐림 효과
+            spreadRadius: 0, // 그림자의 확산 정도
           ),
         ],
       ),
