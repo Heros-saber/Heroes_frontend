@@ -8,16 +8,16 @@ const Color burgundy = Color(0xFF570514);
 const Color coldColor = Color(0xFF90CAF9); // 차가운 색 (파란색 계열)
 const Color hotColor = Color(0xFFEF5350); // 뜨거운 색 (빨간색 계열)
 
-class SearchResultsPage extends StatefulWidget {
+class BatterSearchResultsPage extends StatefulWidget {
   final String query;
 
-  const SearchResultsPage({super.key, required this.query});
+  const BatterSearchResultsPage({super.key, required this.query});
 
   @override
-  _SearchResultsPageState createState() => _SearchResultsPageState();
+  _BatterSearchResultsPageState createState() => _BatterSearchResultsPageState();
 }
 
-class _SearchResultsPageState extends State<SearchResultsPage> {
+class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
   Map<String, dynamic>? playerInfo;
   List<dynamic>? stats;
   List<dynamic>? zones;
@@ -82,7 +82,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SearchResultsPage(query: value),
+                            builder: (context) => BatterSearchResultsPage(query: value),
                           ),
                         );
                       },
