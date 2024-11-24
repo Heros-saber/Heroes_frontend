@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/searchresultspage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 void main() {
   runApp(MyApp());
@@ -11,6 +14,7 @@ void main() {
 const Color burgundy = Color(0xFF570514);
 
 class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,8 +44,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
-    @override
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+
+class _MainPageState extends State<MainPage> {
+  int rank = 0;
+  int win = 0;
+  int lose = 0;
+  String nextGame = '다음 경기가 존재하지 않습니다';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    const url = 'http://localhost:8080/main'; // API 엔드포인트
+    try {
+      final response = await http.get(Uri.parse(url));
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          rank = data['rank'] ?? 0;
+          win = data['win'] ?? 0;
+          lose = data['lose'] ?? 0;
+          nextGame = data['nextGame'] ?? '다음 경기가 존재하지 않습니다';
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
@@ -215,11 +258,11 @@ class MainPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildStatBox('순위', '6th'),
+                        _buildStatBox('순위', rank.toString()),
                         const SizedBox(width: 30),
-                        _buildStatBox('승', '28'),
+                        _buildStatBox('승', win.toString()),
                         const SizedBox(width: 30),
-                        _buildStatBox('패', '26'),
+                        _buildStatBox('패',  lose.toString()),
                       ],
                     ),
                     const SizedBox(height: 30),
@@ -276,6 +319,29 @@ class MainPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+    // 다음 경기 박스
+  Widget _buildNextMatchBox() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: 960,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: burgundy, width: 1),
+        ),
+        child: Text(
+          nextGame,
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: nextGame == '다음 경기가 존재하지 않습니다' ? burgundy : Colors.black,
+          ),
+        ),
       ),
     );
   }
@@ -403,42 +469,6 @@ class MainPage extends StatelessWidget {
             ),
           )
           .toList(),
-    );
-  }
-
-  // 다음 경기 박스
-  Widget _buildNextMatchBox() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: 960,
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: burgundy, width: 1),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'LG Twins vs Kiwoom Heroes',
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'September 21, 2022 6:30 PM KST',
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 14,
-                color: burgundy,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

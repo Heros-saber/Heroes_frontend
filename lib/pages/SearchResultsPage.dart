@@ -15,8 +15,8 @@ class SearchResultsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
+      body: Column( 
+        children: [ 
           // 상단 바
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -139,7 +139,7 @@ class SearchResultsPage extends StatelessWidget {
                   _buildDetailedAnalysisTable(),
                   const SizedBox(height: 10),
                   const SizedBox(height: 50),
-                  _buildSectionTitle('추가 데이터'),
+                  _buildSectionTitle('추가 데이터'),  
                   _buildSideBySideTables(context),
                 ],
               ),
