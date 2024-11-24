@@ -1,18 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/moredetailpage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const Color burgundy = Color(0xFF570514);
 const Color coldColor = Color(0xFF90CAF9); // 차가운 색 (파란색 계열)
 const Color hotColor = Color(0xFFEF5350); // 뜨거운 색 (빨간색 계열)
 
-class SearchResultsPage extends StatelessWidget {
+class SearchResultsPage extends StatefulWidget {
   final String query;
 
   const SearchResultsPage({super.key, required this.query});
 
   @override
+  _SearchResultsPageState createState() => _SearchResultsPageState();
+}
+
+class _SearchResultsPageState extends State<SearchResultsPage> {
+  Map<String, dynamic>? playerInfo;
+  List<dynamic>? stats;
+  List<dynamic>? zones;
+  bool isLoading = true;
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPlayerData(widget.query);
+  }
+
+  Future<void> fetchPlayerData(String name) async {
+    final url = 'http://localhost:8080/player/batter/$name'; // API 엔드포인트
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          playerInfo = data['playerInfo'];
+          stats = data['stats'];
+          zones = data['zone'] ?? [];
+        });
+      } else {
+        throw Exception('Failed to load player data');
+      }
+    } catch (e) {
+      print('Error fetching player data: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final query = ModalRoute.of(context)?.settings.arguments as String? ?? 'Default Player';
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column( 
@@ -38,18 +78,26 @@ class SearchResultsPage extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   child: TextField(
+                    onSubmitted: (value) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SearchResultsPage(query: value),
+                          ),
+                        );
+                      },
                     decoration: InputDecoration(
-                      hintText: 'Search',
-                      prefixIcon: const Icon(Icons.search, color: burgundy),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        hintText: '선수 이름을 검색하세요',
+                        prefixIcon: const Icon(Icons.search, color: burgundy),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: burgundy),
+                        ),
+                        contentPadding: const EdgeInsets.all(8),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: burgundy),
-                      ),
-                      contentPadding: const EdgeInsets.all(8),
-                    ),
                   ),
                 ),
               ],
@@ -97,8 +145,11 @@ class SearchResultsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 30), // 선수 정보 아래로 이동
                         // 선수 상세 정보
-                        Text(
-                          '이름: 송성문\n생년월일: 1996.08.29\n데뷔: 15 넥센 2차 5라운드\n포지션: 3B',
+                       Text(
+                          '이름: ${playerInfo?['playerName'] ?? 'N/A'}\n'
+                          '생년월일: ${playerInfo?['playerBorn'] ?? 'N/A'}\n'
+                          '데뷔: ${playerInfo?['playerDraft'] ?? 'N/A'}\n'
+                          '포지션: ${playerInfo?['playerPos'] ?? 'N/A'}',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 16,
@@ -139,8 +190,8 @@ class SearchResultsPage extends StatelessWidget {
                   _buildDetailedAnalysisTable(),
                   const SizedBox(height: 10),
                   const SizedBox(height: 50),
-                  _buildSectionTitle('추가 데이터'),  
                   _buildSideBySideTables(context),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -180,7 +231,7 @@ class SearchResultsPage extends StatelessWidget {
         ),
         child: Table(
           columnWidths: const {
-            0: FlexColumnWidth(2),
+            0: FlexColumnWidth(1),
             1: FlexColumnWidth(1),
             2: FlexColumnWidth(1),
             3: FlexColumnWidth(1),
@@ -193,6 +244,7 @@ class SearchResultsPage extends StatelessWidget {
             10: FlexColumnWidth(1),
             11: FlexColumnWidth(1),
             12: FlexColumnWidth(1),
+            13: FlexColumnWidth(1),
           },
           children: [
             _buildTableHeader([
@@ -208,10 +260,26 @@ class SearchResultsPage extends StatelessWidget {
               '2B',
               '3B',
               'HR',
-              'RBI'
+              'RBI',
+              'WAR',
             ]),
-            for (int i = 0; i < 10; i++)
-              _buildTableRow(List.generate(13, (index) => '2015')),
+             for (var stat in stats!)
+              _buildTableRow([
+                stat['year'].toString(),
+                stat['avg'].toString(),
+                stat['ops'].toString(),
+                stat['slg'].toString(),
+                stat['obp'].toString(),
+                stat['war'].toString(),
+                stat['pa'].toString(),
+                stat['ab'].toString(),
+                stat['hit'].toString(),
+                stat['twoB'].toString(),
+                stat['threeB'].toString(),
+                stat['hr'].toString(),
+                stat['rbi'].toString(),
+                stat['wrcPlus'].toString(),
+              ]),
           ],
         ),
       ),
@@ -265,28 +333,57 @@ class SearchResultsPage extends StatelessWidget {
   }
 
 // 5x5 표 (동적 색상 변경, 테두리 유지)
-  Widget _buildDynamic5x5Table() {
+  Widget _buildDynamic5x5Table(String tag) {
     const double tableSize = 380; // 테이블 전체 크기
     const double cellSize = tableSize / 5; // 각 셀 크기
 
-    // 더미 데이터
-    final List<List<double>> data = [
-      [0.208, 0.318, 0.389, 0.429, 0.338],
-      [0.271, 0.360, 0.457, 0.500, 0.370],
-      [0.250, 0.370, 0.358, 0.338, 0.318],
-      [0.338, 0.360, 0.429, 0.389, 0.318],
-      [0.208, 0.250, 0.271, 0.338, 0.308],
-    ];
+    final zoneData = zones?.firstWhere((zone) 
+    => zone['tag'] == tag, orElse: () => null);
+
+    if (zoneData == null) {
+      return Center(
+        child: Text(
+          '0',
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 14,
+            color: Colors.black,
+          ),
+        ),
+      );
+    }
+
+    // 데이터 추출 (존 번호 1~25)
+    List<List<double?>> tableData = [];
+    for (int row = 0; row < 5; row++) {
+      List<double?> rowData = [];
+      for (int col = 0; col < 5; col++) {
+        int zoneIndex = (row * 5) + col + 1;
+        rowData.add(zoneData['zone$zoneIndex']?.toDouble());
+      }
+      tableData.add(rowData);
+    }
 
     // 배경색 계산 (핫-콜드 존)
-    Color _getBackgroundColor(double value) {
-      if (value < 0.35) {
-        // Cold Zone (blue)
-        return coldColor;
-      } else {
-        // Hot Zone (red) with intensity scaling for higher values
-        double intensity = (value - 0.35) / (0.5 - 0.35); // Scale intensity for hot zone
-        return Color.lerp(const Color.fromARGB(255, 247, 192, 192), hotColor, intensity)!;
+    Color? _getBackgroundColor(double? value) {
+      if (value == null) return Colors.white;
+      if (tag == '타율') {
+        // 타율 기준
+        if (value < 0.28) {
+          return coldColor; // Cold Zone
+        } else {
+          double intensity = (value - 0.28) / (0.5 - 0.28);
+          return Color.lerp(
+              const Color.fromARGB(255, 247, 192, 192), hotColor, intensity)!;
+        }
+      } else if (tag == 'ops') {
+        // OPS 기준
+        if (value < 0.7) {
+          return coldColor;
+        } else {
+          double intensity = (value - 0.7) / (1.0 - 0.7);
+          return Color.lerp(
+              const Color.fromARGB(255, 247, 192, 192), hotColor, intensity)!;
+        }
       }
     }
 
@@ -302,7 +399,7 @@ class SearchResultsPage extends StatelessWidget {
           4: FixedColumnWidth(cellSize),
         },
         border: TableBorder.all(color: burgundy, width: 0.5), // 각 셀의 테두리
-        children: [
+         children: [
           for (int i = 0; i < 5; i++)
             TableRow(
               children: List.generate(
@@ -312,10 +409,10 @@ class SearchResultsPage extends StatelessWidget {
                   height: cellSize,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _getBackgroundColor(data[i][j]), // 배경색만 변경
+                    color: _getBackgroundColor(tableData[i][j]), // 배경색만 변경
                   ),
                   child: Text(
-                    data[i][j].toStringAsFixed(3), // 값 표시
+                    tableData[i][j]?.toStringAsFixed(3) ?? '', // 값 표시
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 14,
                       color: Colors.black,
@@ -336,9 +433,41 @@ class SearchResultsPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildDynamic5x5Table(),
-        const SizedBox(width: 200),
-        _buildDynamic5x5Table(),
+        // 첫 번째 표 및 섹션 타이틀
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10), // 제목과 표 간격 조정
+              child: Text(
+                '타율', // 첫 번째 표 제목
+                style: GoogleFonts.beVietnamPro(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            _buildDynamic5x5Table('타율'),
+          ],
+        ),
+        const SizedBox(width: 200), // 표 사이 간격
+        // 두 번째 표 및 섹션 타이틀
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10), // 제목과 표 간격 조정
+              child: Text(
+                'OPS', // 두 번째 표 제목
+                style: GoogleFonts.beVietnamPro(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            _buildDynamic5x5Table('ops'),
+          ],
+        ),
       ],
     );
   }

@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/mainpage',
       routes: {
         '/mainpage': (context) => MainPage(),
-        '/searchresults': (context) => SearchResultsPage(query: 'Default Player'),
       },
+      home: MainPage(),
       theme: ThemeData(
         primaryColor: burgundy,
         textTheme: GoogleFonts.beVietnamProTextTheme(),
@@ -106,8 +106,17 @@ class _MainPageState extends State<MainPage> {
                   SizedBox(
                     width: 300,
                     child: TextField(
+                      onSubmitted: (value) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SearchResultsPage(query: value),
+                          ),
+                        );
+                      },
                       decoration: InputDecoration(
                         hintText: '선수 이름을 검색하세요',
+                        prefixIcon: const Icon(Icons.search, color: burgundy),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -116,19 +125,7 @@ class _MainPageState extends State<MainPage> {
                           borderSide: BorderSide(color: burgundy),
                         ),
                         contentPadding: const EdgeInsets.all(8),
-                        prefixIcon: IconButton(
-                          icon: const Icon(Icons.search, color: burgundy),
-                            onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/searchresults',
-                            );
-                          },
-                        ),
                       ),
-                      onSubmitted: (_) {
-                        Navigator.pushNamed(context, '/searchresults');
-                      },
                     ),
                   ),
                 ],
