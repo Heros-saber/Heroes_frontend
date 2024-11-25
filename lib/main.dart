@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/battersearchresultspage.dart';
 import 'package:heroessaber/pages/pitchersearchresultspage.dart';
+import 'package:heroessaber/pages/playerregistpage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/mainpage',
       routes: {
         '/mainpage': (context) => MainPage(),
+        '/registerPlayer': (context) => PlayerRegistPage(),
       },
       home: MainPage(),
       theme: ThemeData(
@@ -104,6 +106,31 @@ class _MainPageState extends State<MainPage> {
                     'assets/logo.png',
                     height: 50,
                   ),
+                    ElevatedButton(
+                    onPressed: () {
+                      // 선수 등록 페이지 이동 로직 추가
+                      Navigator.pushNamed(context, '/registerPlayer');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: burgundy, // 버튼 색상
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
+                    ),
+                    child: Text(
+                      '선수 등록',
+                      style: GoogleFonts.beVietnamPro(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  // const SizedBox(width: -10),
                   SizedBox(
                     width: 300,
                     child: TextField(
