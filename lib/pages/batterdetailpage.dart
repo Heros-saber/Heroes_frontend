@@ -270,7 +270,7 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
   );
 
   Color _getBackgroundColor(double? value) {
-    if (value == null) return Colors.white;
+    if (value == null || value == 0) return Colors.white;
     if (value < 0.7) {
       return coldColor; // Cold Zone
     } else {

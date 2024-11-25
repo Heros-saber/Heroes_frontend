@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/batterdetailpage.dart';
+import 'package:heroessaber/pages/pitchersearchresultspage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -78,13 +79,28 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
                 SizedBox(
                   width: 300,
                   child: TextField(
-                    onSubmitted: (value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BatterSearchResultsPage(query: value),
-                          ),
-                        );
+                    onSubmitted: (value) async {
+                        final playerType = await fetchPlayerType(value);
+
+                        if (playerType == 'batter') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BatterSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else if (playerType == 'pitcher') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PitcherSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('해당 선수를 찾을 수 없습니다.')),
+                          );
+                        }
                       },
                     decoration: InputDecoration(
                         hintText: '선수 이름을 검색하세요',
@@ -184,7 +200,6 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
                           ),
                         ),
                       ),
-
                     ),
                   ),
                   // 상세 분석 섹션
@@ -201,6 +216,22 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
         ],
       ),
     );
+  }
+
+  Future<String> fetchPlayerType(String playerName) async {
+    const urlBase = 'http://localhost:8080/player/type/'; // API 엔드포인트
+    try {
+      final response = await http.get(Uri.parse('$urlBase$playerName'));
+
+      if (response.statusCode == 200) {
+        return response.body; // 'batter' 또는 'pitcher' 반환
+      } else {
+        throw Exception('Failed to fetch player type');
+      }
+    } catch (e) {
+      print('Error fetching player type: $e');
+      return '';
+    }
   }
 
   // 섹션 타이틀
@@ -367,7 +398,7 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
 
     // 배경색 계산 (핫-콜드 존)
     Color? _getBackgroundColor(double? value) {
-      if (value == null) return Colors.white;
+      if (value == null || value == 0) return Colors.white;
       if (tag == '타율') {
         // 타율 기준
         if (value < 0.28) {

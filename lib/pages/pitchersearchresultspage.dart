@@ -184,10 +184,11 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
                       alignment: Alignment.centerRight,
                       child: InkWell(
                         onTap: () {
-                          // 새로운 페이지로 이동
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const PitcherDetailsPage()),
+                            MaterialPageRoute(
+                              builder: (context) => PitcherDetailPage(query: widget.query),
+                            ),
                           );
                         },
                         child: Text(
@@ -409,7 +410,7 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
 
     // 배경색 계산 (핫-콜드 존)
     Color? _getBackgroundColor(double? value) {
-      if (value == null) return Colors.white;
+      if (value == null || value == 0) return Colors.white;
       if (tag == '구사율') {
         // 타율 기준
         if (value < 3.2) {
