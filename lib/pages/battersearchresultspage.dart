@@ -168,10 +168,11 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
                       alignment: Alignment.centerRight,
                       child: InkWell(
                         onTap: () {
-                          // 새로운 페이지로 이동
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const MoreDetailsPage()),
+                            MaterialPageRoute(
+                              builder: (context) => BatterDetailPage(query: widget.query),
+                            ),
                           );
                         },
                         child: Text(
@@ -183,6 +184,7 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
                           ),
                         ),
                       ),
+
                     ),
                   ),
                   // 상세 분석 섹션
