@@ -8,12 +8,29 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 void main() {
   runApp(MyApp());
 }
 
 const Color burgundy = Color(0xFF570514);
+
+class GameResult {
+  final DateTime date;
+  final int kiwoomScore;
+  final int opponentScore;
+  final bool? win;
+
+  GameResult({required this.date, required this.kiwoomScore, required this.opponentScore, this.win});
+
+  factory GameResult.fromJson(Map<String, dynamic> json) {
+    return GameResult(
+      date: DateTime.parse(json['date']),
+      kiwoomScore: json['kiwoomScore'],
+      opponentScore: json['opponentScore'],
+      win: json['win'],
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   
@@ -58,11 +75,14 @@ class _MainPageState extends State<MainPage> {
   int win = 0;
   int lose = 0;
   String nextGame = '다음 경기가 존재하지 않습니다';
+  Map<DateTime, List<GameResult>> gameResults = {};
+  DateTime focusedDay = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    fetchMonthlyGames(DateTime.now().year, DateTime.now().month);
   }
 
   Future<void> fetchData() async {
@@ -86,6 +106,43 @@ class _MainPageState extends State<MainPage> {
       print('Error fetching data: $e');
     }
   }
+
+Future<void> fetchMonthlyGames(int year, int month) async {
+  final url = 'http://localhost:8080/main/match?year=$year&month=$month';
+  try {
+    final response = await http.get(Uri.parse(url));
+    print('Fetching games for $year-$month: Status Code: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final results = data.map((game) => GameResult.fromJson(game)).toList();
+      print('Fetched Results: $results'); // 디버깅 로그
+
+      setState(() {
+        gameResults = groupByDate(results);
+        print('Grouped Results: $gameResults'); // 디버깅 로그
+      });
+    } else {
+      throw Exception('Failed to load monthly games');
+    }
+  } catch (e) {
+    print('Error fetching monthly games: $e');
+  }
+}
+
+Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
+  final grouped = <DateTime, List<GameResult>>{};
+  for (var result in results) {
+    // 날짜만 사용 (시간 제거)
+    final day = DateTime(result.date.year, result.date.month, result.date.day);
+    if (!grouped.containsKey(day)) {
+      grouped[day] = [];
+    }
+    grouped[day]!.add(result);
+    print('Adding result for $day: $result'); // 디버깅 로그
+  }
+  return grouped;
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -204,10 +261,19 @@ class _MainPageState extends State<MainPage> {
                     child: TableCalendar(
                       firstDay: DateTime.utc(2023, 1, 1),
                       lastDay: DateTime.utc(2024, 12, 31),
-                      focusedDay: DateTime.now(),
+                      focusedDay: focusedDay,
+                      onPageChanged: (newFocusedDay) {
+                        setState(() {
+                          focusedDay = newFocusedDay; // 포커스된 날짜 업데이트
+                        });
+                        fetchMonthlyGames(newFocusedDay.year, newFocusedDay.month); // 새로운 데이터 로드
+                      },
                       calendarFormat: CalendarFormat.month,
-                      onDaySelected: (selectedDay, focusedDay) {
-                        // 선택한 날짜에 대한 동작 추가 가능
+                      eventLoader: (day) {
+                        final truncatedDay = DateTime(day.year, day.month, day.day); // 날짜만 사용
+                        final events = gameResults[truncatedDay] ?? []; // List<GameResult> 가져오기
+                        print('Events for $truncatedDay: $events'); // 디버깅 로그
+                        return events;
                       },
                       headerStyle: HeaderStyle(
                         formatButtonVisible: false,
@@ -241,6 +307,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                       calendarStyle: CalendarStyle(
+                        markersMaxCount: 0,
                         todayDecoration: BoxDecoration(
                           color: burgundy.withOpacity(1.0),
                           shape: BoxShape.circle,
@@ -262,33 +329,33 @@ class _MainPageState extends State<MainPage> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         defaultBuilder: (context, day, focusedDay) {
-                          return Center(
-                            child: Text(
-                              '${day.day}', // 날짜 표시
-                              style: GoogleFonts.beVietnamPro(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          );
-                        },
-                        todayBuilder: (context, day, focusedDay) {
-                          return Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: burgundy,
-                                shape: BoxShape.circle,
-                              ),
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                '${day.day}',
+                          // 날짜와 경기 결과를 Column으로 배치
+                          final truncatedDay = DateTime(day.year, day.month, day.day);
+                          final events = gameResults[truncatedDay] ?? []; // 해당 날짜의 경기 결과 가져오기
+
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${day.day}', // 날짜 텍스트
                                 style: GoogleFonts.beVietnamPro(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
-                            ),
+                              const SizedBox(height: 4), // 날짜와 경기 결과 사이 간격
+                              if (events.isNotEmpty)
+                                ...events.map((game) {
+                                  return Text(
+                                    '${game.kiwoomScore}:${game.opponentScore} (${game.win == true ? "승" : "패"})', // 경기 결과 텍스트
+                                    style: GoogleFonts.beVietnamPro(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.normal,
+                                      color: burgundy,
+                                    ),
+                                  );
+                                }).toList(),
+                            ],
                           );
                         },
                       ),
@@ -326,7 +393,7 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-  }
+  } 
 
   Future<String> fetchPlayerType(String playerName) async {
     const urlBase = 'http://localhost:8080/player/type/'; // API 엔드포인트
@@ -440,10 +507,10 @@ class _MainPageState extends State<MainPage> {
           },
           children: [
             _buildTableHeader(['Name', 'AVG', 'HR', 'RBI', 'OPS']),
-            _buildTableRow(['Kim Ha-seong', '0.273', '29', '77', '0.921']),
-            _buildTableRow(['Lee Jung-hoo', '0.309', '13', '46', '0.911']),
-            _buildTableRow(['Park Byung-ho', '0.267', '39', '103', '0.876']),
-            _buildTableRow(['Choi Hyung-woo', '0.283', '27', '83', '0.873']),
+            _buildTableRow(['송성문', '0.273', '29', '77', '0.921']),
+            _buildTableRow(['김혜성', '0.309', '13', '46', '0.911']),
+            _buildTableRow(['이주형', '0.267', '39', '103', '0.876']),
+            _buildTableRow(['최주환', '0.283', '27', '83', '0.873']),
             _buildTableRow(['Kim Jae-hwan', '0.241', '34', '91', '0.835']),
           ],
         ),
@@ -471,10 +538,10 @@ class _MainPageState extends State<MainPage> {
           },
           children: [
             _buildTableHeader(['Name', 'ERA', 'W', 'L', 'SV']),
-            _buildTableRow(['Kim Ha-seong', '2.73', '28', '7', '0']),
-            _buildTableRow(['Lee Jung-hoo', '3.20', '12', '10', '0']),
-            _buildTableRow(['Park Byung-ho', '2.67', '39', '9', '1']),
-            _buildTableRow(['Choi Hyung-woo', '3.83', '27', '8', '0']),
+            _buildTableRow(['후라도', '3.36', '10', '8', '0']),
+            _buildTableRow(['헤이수스', '3.68', '13', '11', '0']),
+            _buildTableRow(['하영민', '4.37', '9', '8', '0']),
+            _buildTableRow(['주승우', '3.83', '27', '8', '0']),
             _buildTableRow(['Kim Jae-hwan', '2.41', '34', '9', '1']),
           ],
         ),
