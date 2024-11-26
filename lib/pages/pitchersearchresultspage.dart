@@ -140,23 +140,25 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
-                              height: 150,
-                              width: 150,
-                            ),
+                            if (playerInfo?['team'] == '키움')
+                              Image.asset(
+                                'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
+                                height: 150,
+                                width: 150,
+                              ),
                             const SizedBox(width: 250),
                             Image.asset(
-                              'assets/player_img.png', // 선수 이미지
+                              playerInfo?['team'] == '키움' ? 'assets/player_img.png' : 'assets/Name.png', // 선수 이미지
                               width: 250,
                               height: 250,
                             ),
                             const SizedBox(width: 200),
-                            Image.asset(
-                              'assets/kiwoom_logo.png', // 우측 로고 이미지
-                              height: 200,
-                              width: 200,
-                            ),
+                            if (playerInfo?['team'] == '키움')
+                              Image.asset(
+                                'assets/kiwoom_logo.png', // 우측 로고 이미지
+                                height: 200,
+                                width: 200,
+                              ),
                           ],
                         ),
                         const SizedBox(height: 30), // 선수 정보 아래로 이동
@@ -179,7 +181,7 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
                   _buildShadowDivider(),
                   const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
                   Padding(
-                    padding: const EdgeInsets.only(right: 300),
+                    padding: const EdgeInsets.only(right: 225),
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: InkWell(
@@ -257,7 +259,7 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
-        width: 1200,
+        width: 1100,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: burgundy, width: 1),
@@ -287,9 +289,9 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
             _buildTableHeader([
               'Year',
               'G',
-              'WIN',
-              'LOSE',
-              'SAVE',
+              'W',
+              'LO',
+              'SV',
               'HOLD',
               'IP',
               'ER',
@@ -410,7 +412,7 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
 
     // 배경색 계산 (핫-콜드 존)
     Color? _getBackgroundColor(double? value) {
-      if (value == null || value == 0) return Colors.white;
+      if (value == null) return Colors.white;
       if (tag == '구사율') {
         // 타율 기준
         if (value < 3.2) {

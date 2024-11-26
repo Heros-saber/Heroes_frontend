@@ -38,9 +38,14 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 로고
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 50,
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/mainpage');
+                    },
+                    child: Image.asset(
+                      'assets/logo.png', // 로고 이미지 파일 경로
+                      height: 50,
+                    ),
                   ),
                     ElevatedButton(
                     onPressed: () {
@@ -244,17 +249,17 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
       print('Response Status Code: ${response.statusCode}'); // 상태 코드 출력
       print('Response Body: ${response.body}'); // 응답 본문 출력
       if (response.statusCode == 200) {
-        _showDialog('성공', '등록이 성공적으로 완료되었습니다.');
+        _showDialog('성공', '등록이 성공적으로 완료되었습니다.', name, true);
       } else {
-        _showDialog('실패', '등록에 실패했습니다. 다시 시도해주세요.');
+        _showDialog('실패', '등록에 실패했습니다. 다시 시도해주세요.', name, false);
       }
     } catch (e) {
       print('Error: $e'); // 에러 메시지 출력
-      _showDialog('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      _showDialog('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.', name, false);
     }
   }
 
-  void _showDialog(String title, String message) {
+  void _showDialog(String title, String message, String playerName, bool isSuccess) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -263,14 +268,39 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
           content: Text(message, style: GoogleFonts.beVietnamPro(fontSize: 16, color: Colors.black)),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+              if (isSuccess) {
+                final playerType = await fetchPlayerType(playerName);
+
+                if (playerType == 'batter') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BatterSearchResultsPage(query: playerName),
+                    ),
+                  );
+                } else if (playerType == 'pitcher') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PitcherSearchResultsPage(query: playerName),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('해당 선수를 찾을 수 없습니다.')),
+                  );
+                }
+              } else {
                 Navigator.of(context).pop();
-              },
+              }
+            },
               child: Text('확인', style: GoogleFonts.beVietnamPro(color: burgundy, fontWeight: FontWeight.bold)),
             ),
           ],
         );
       },
     );
-}
+  }
+  
 }

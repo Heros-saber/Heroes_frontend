@@ -135,23 +135,25 @@ class _BatterDetailPage extends State<BatterDetailPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
-                            height: 150,
-                            width: 150,
-                          ),
+                          if (playerInfo?['team'] == '키움')
+                              Image.asset(
+                                'assets/kiwoom_logo_circle.png', // 좌측 로고 이미지  
+                                height: 150,
+                                width: 150,
+                              ),
                           const SizedBox(width: 250),
                           Image.asset(
-                            'assets/player_img.png', // 선수 이미지
+                            playerInfo?['team'] == '키움' ? 'assets/player_img.png' : 'assets/Name.png', // 선수 이미지
                             width: 250,
                             height: 250,
                           ),
                           const SizedBox(width: 200),
-                          Image.asset(
-                            'assets/kiwoom_logo.png', // 우측 로고 이미지
-                            height: 200,
-                            width: 200,
-                          ),
+                          if (playerInfo?['team'] == '키움')
+                              Image.asset(
+                                'assets/kiwoom_logo.png', // 우측 로고 이미지
+                                height: 200,
+                                width: 200,
+                              ),
                         ],
                       ),
                       const SizedBox(height: 30), // 선수 정보 아래로 이동
@@ -221,7 +223,7 @@ Widget _buildSideBySideTables(BuildContext context) {
           // 첫 번째 테이블
           if (i < zones!.length)
             _buildTableWithHeader(zones![i]['circumstance'], zones![i]['opsData']),
-          const SizedBox(width: 50), // 테이블 간 간격
+          const SizedBox(width: 150), // 테이블 간 간격
           // 두 번째 테이블
           if (i + 1 < zones!.length)
             _buildTableWithHeader(zones![i + 1]['circumstance'], zones![i + 1]['opsData']),
@@ -270,7 +272,7 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
   );
 
   Color _getBackgroundColor(double? value) {
-    if (value == null || value == 0) return Colors.white;
+    if (value == null) return Colors.white;
     if (value < 0.7) {
       return coldColor; // Cold Zone
     } else {

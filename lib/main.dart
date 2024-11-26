@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> {
   int rank = 0;
   int win = 0;
   int lose = 0;
-  String nextGame = '다음 경기가 존재하지 않습니다';
+  String nextGame = '다음 경기가 존재하지 않습니다.';
   Map<DateTime, List<GameResult>> gameResults = {};
   DateTime focusedDay = DateTime.now();
 
@@ -243,7 +243,7 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
                 children: [
                   const SizedBox(height: 45),
                   Image.asset(
-                    'assets/wallpaper.png',
+                    'assets/new.jpg',
                     fit: BoxFit.cover,
                     width: 948,
                     height: 524,
@@ -503,15 +503,13 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
             1: FlexColumnWidth(1),
             2: FlexColumnWidth(1),
             3: FlexColumnWidth(1),
-            4: FlexColumnWidth(1),
           },
           children: [
-            _buildTableHeader(['Name', 'AVG', 'HR', 'RBI', 'OPS']),
-            _buildTableRow(['송성문', '0.273', '29', '77', '0.921']),
-            _buildTableRow(['김혜성', '0.309', '13', '46', '0.911']),
-            _buildTableRow(['이주형', '0.267', '39', '103', '0.876']),
-            _buildTableRow(['최주환', '0.283', '27', '83', '0.873']),
-            _buildTableRow(['Kim Jae-hwan', '0.241', '34', '91', '0.835']),
+            _buildTableHeader(['Name', 'AVG', 'HR', 'RBI', 'OPS', 'WAR', 'WRC+']),
+            _buildTableRow(['송성문', '0.340', '19', '104', '0.927', '6.13', '148.9']),
+            _buildTableRow(['김혜성', '0.326', '11', '75', '0.841', '5.16', '124.1']),
+            _buildTableRow(['이주형', '0.226', '19', '60', '0.754', '1.99', '103.6']),
+            _buildTableRow(['최주환', '0.257', '13', '84', '0.715', '-0.03', '86.1']),
           ],
         ),
       ),
@@ -534,15 +532,13 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
             1: FlexColumnWidth(1),
             2: FlexColumnWidth(1),
             3: FlexColumnWidth(1),
-            4: FlexColumnWidth(1),
           },
           children: [
-            _buildTableHeader(['Name', 'ERA', 'W', 'L', 'SV']),
-            _buildTableRow(['후라도', '3.36', '10', '8', '0']),
-            _buildTableRow(['헤이수스', '3.68', '13', '11', '0']),
-            _buildTableRow(['하영민', '4.37', '9', '8', '0']),
-            _buildTableRow(['주승우', '3.83', '27', '8', '0']),
-            _buildTableRow(['Kim Jae-hwan', '2.41', '34', '9', '1']),
+            _buildTableHeader(['Name', 'ERA', 'W', 'L', 'SV', 'WHIP', 'WAR']),
+            _buildTableRow(['후라도', '3.36', '10', '8', '0', '1.14', '6.61']),
+            _buildTableRow(['헤이수스', '3.68', '13', '11', '0', '1.25', '5.09']),
+            _buildTableRow(['하영민', '4.37', '9', '8', '0', '1.5', '3.25']),
+            _buildTableRow(['주승우', '4.35', '4', '6', '14', '1.32', '0.98']),
           ],
         ),
       ),
