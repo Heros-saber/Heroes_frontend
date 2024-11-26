@@ -63,7 +63,6 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             color: Colors.white,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // 로고
                 InkWell(
@@ -75,6 +74,32 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
                     height: 50,
                   ),
                 ),
+                const SizedBox(width: 850),
+                    ElevatedButton(
+                    onPressed: () {
+                      // 선수 등록 페이지 이동 로직 추가
+                      Navigator.pushNamed(context, '/registerPlayer');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: burgundy, // 버튼 색상
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
+                    ),
+                    child: Text(
+                      '선수 등록',
+                      style: GoogleFonts.beVietnamPro(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 50),
                 // 검색창
                 SizedBox(
                   width: 300,

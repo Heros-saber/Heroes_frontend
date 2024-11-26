@@ -75,7 +75,6 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               color: Colors.white,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 로고
                   InkWell(
@@ -87,6 +86,32 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                       height: 50,
                     ),
                   ),
+                  const SizedBox(width: 850),
+                    ElevatedButton(
+                    onPressed: () {
+                      // 선수 등록 페이지 이동 로직 추가
+                      Navigator.pushNamed(context, '/registerPlayer');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: burgundy, // 버튼 색상
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
+                      ),
+                    ),
+                    child: Text(
+                      '선수 등록',
+                      style: GoogleFonts.beVietnamPro(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 50),
                   // 검색창
                   SizedBox(
                     width: 300,
@@ -330,7 +355,6 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
   // 구분선
   Widget _buildShadowDivider() {
     return Container(
-      // margin: const EdgeInsets.symmetric(vertical: 10), // 구분선 위아래 여백
       height: 1, // 구분선 높이
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.4), // 구분선의 기본 색상

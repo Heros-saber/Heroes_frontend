@@ -47,30 +47,6 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
                       height: 50,
                     ),
                   ),
-                    ElevatedButton(
-                    onPressed: () {
-                      // 선수 등록 페이지 이동 로직 추가
-                      Navigator.pushNamed(context, '/registerPlayer');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: burgundy, // 버튼 색상
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
-                    ),
-                    child: Text(
-                      '선수 등록',
-                      style: GoogleFonts.beVietnamPro(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                   SizedBox(
                     width: 300,
                     child: TextField(
@@ -126,7 +102,7 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                     // NOTICE Section
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -164,9 +140,9 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
                     ),
                     const SizedBox(height: 80),
                     // Player Registration Section
-                    _buildRegistrationInput('등록하고 싶은 타자 이름', '선수 이름을 검색하세요', true),
+                    _buildRegistrationInput('등록하고 싶은 타자 이름', '선수 이름을 입력하세요', true),
                     const SizedBox(height: 40),
-                    _buildRegistrationInput('등록하고 싶은 투수 이름', '선수 이름을 검색하세요', false),
+                    _buildRegistrationInput('등록하고 싶은 투수 이름', '선수 이름을 입력하세요', false),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -200,6 +176,7 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+        const SizedBox(width: 400),
         // 레이블
         SizedBox(
           width: 250, // 레이블의 고정된 너비
@@ -215,7 +192,7 @@ class _PlayerRegistPage extends State<PlayerRegistPage> {
         const SizedBox(width: 20), // 레이블과 검색창 사이의 간격
         // 검색창
         SizedBox(
-          width: 250, // 검색창의 너비 제한
+          width: 350, // 검색창의 너비 제한
           child: TextField(
             onSubmitted: (value) {
               _registerPlayer(value, isBatter); // 타자 또는 투수 등록 API 호출

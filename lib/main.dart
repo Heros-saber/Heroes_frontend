@@ -156,13 +156,13 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               color: Colors.white,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 로고
                   Image.asset(
                     'assets/logo.png',
                     height: 50,
                   ),
+                  const SizedBox(width: 850),
                     ElevatedButton(
                     onPressed: () {
                       // 선수 등록 페이지 이동 로직 추가
@@ -187,7 +187,7 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
                       ),
                     ),
                   ),
-                  // const SizedBox(width: -10),
+                  const SizedBox(width: 50),
                   SizedBox(
                     width: 300,
                     child: TextField(
