@@ -243,7 +243,7 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
                 children: [
                   const SizedBox(height: 45),
                   Image.asset(
-                    'assets/new.jpg',
+                    'assets/wallpaper.png',
                     fit: BoxFit.cover,
                     width: 948,
                     height: 524,
