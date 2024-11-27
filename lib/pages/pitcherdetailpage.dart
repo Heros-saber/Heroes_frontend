@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/pitchersearchresultspage.dart';
+import 'package:heroessaber/pages/battersearchresultspage.dart'; 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -21,6 +22,7 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
   Map<String, dynamic>? playerInfo;
   List<dynamic>? stats;
   List<dynamic>? zones;
+  String one_line_analysis = '';
   bool isLoading = true;
   String errorMessage = '';
 
@@ -28,6 +30,7 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
   void initState() {
     super.initState();
     fetchPlayerData(widget.query);
+    fetchPlayerAnalysis(widget.query);
   }
 
   Future<void> fetchPlayerData(String name) async {
@@ -38,8 +41,6 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
         final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           playerInfo = data['playerInfo'];
-          stats = data['stats'];
-          zones = _organizeOpsByCircumstance(data['groupedZones']);
         });
       } else {
         throw Exception('Failed to load player data');
@@ -49,18 +50,23 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
     }
   }
 
-  List<Map<String, dynamic>> _organizeOpsByCircumstance(Map<String, dynamic> groupedZones) {
-  List<Map<String, dynamic>> opsTables = [];
-  groupedZones.forEach((circumstance, entries) {
-    final opsEntry = entries.firstWhere((item) => item['tag'] == '타율', orElse: () => null);
-    if (opsEntry != null) {
-      opsTables.add({
-        'circumstance': circumstance,
-        'opsData': opsEntry,
-      });
+Future<void> fetchPlayerAnalysis(String name) async {
+  final url = 'http://localhost:8080/pitcher/analysis/$name'; // API endpoint
+  try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          stats = data['stats'];
+          zones = data['zoneStatDTO'];
+          one_line_analysis = data['one_line_analysis'] as String;
+        });
+      } else {  
+        throw Exception('Failed to load player data');
+      }
+    } catch (e) {
+      print('Error fetching player data: $e');
     }
-  });
-  return opsTables;
 }
 
   @override
@@ -114,17 +120,32 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                   const SizedBox(width: 50),
                   // 검색창
                   SizedBox(
-                    width: 300,
-                    child: TextField(
-                      onSubmitted: (value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PitcherSearchResultsPage(query: value),
-                          ),
-                        );
+                  width: 300,
+                  child: TextField(
+                    onSubmitted: (value) async {
+                        final playerType = await fetchPlayerType(value);
+
+                        if (playerType == 'batter') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BatterSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else if (playerType == 'pitcher') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PitcherSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('해당 선수를 찾을 수 없습니다.')),
+                          );
+                        }
                       },
-                      decoration: InputDecoration(
+                    decoration: InputDecoration(
                         hintText: '선수 이름을 검색하세요',
                         prefixIcon: const Icon(Icons.search, color: burgundy),
                         border: OutlineInputBorder(
@@ -136,8 +157,8 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                         ),
                         contentPadding: const EdgeInsets.all(8),
                       ),
-                    ),
                   ),
+                ),
                 ],
               ),
             ),
@@ -167,11 +188,25 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                                 width: 150,
                               ),
                           const SizedBox(width: 250),
-                          Image.asset(
-                            playerInfo?['team'] == '키움' ? 'assets/player_img.png' : 'assets/Name.png', // 선수 이미지
-                            width: 250,
-                            height: 250,
-                          ),
+                          // 선수 이미지 표시
+                              playerInfo?['playerImage'] != null
+                                  ? Image.network(
+                                      playerInfo!['playerImage'], // JSON 데이터에서 가져온 이미지 URL
+                                      width: 200,
+                                      height: 200,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/Name.png', // 로드 실패 시 기본 이미지
+                                          width: 200,
+                                          height: 200,
+                                        );
+                                      },
+                                    )
+                                  : Image.asset(
+                                      'assets/Name.png', // playerImage가 null일 경우 기본 이미지
+                                      width: 200,
+                                      height: 200,
+                                    ),
                           const SizedBox(width: 200),
                           if (playerInfo?['team'] == '키움')
                               Image.asset(
@@ -213,18 +248,7 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                     ],
                   ),
                 ),
-                FutureBuilder<String?>(
-                  future: fetchPlayerAnalysis(widget.query), // Fetch analysis data
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return _buildPlayerAnalysisBox('분석 데이터를 불러오는 데 실패했습니다.');
-                    } else {
-                      return _buildPlayerAnalysisBox(snapshot.data); // Display analysis
-                    }
-                  },
-                ),
+                _buildPlayerAnalysisBox(one_line_analysis),
                 const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
                 // 상세 분석 섹션
                 _buildSideBySideTables(context),
@@ -259,11 +283,11 @@ Widget _buildSideBySideTables(BuildContext context) {
         children: [
           // 첫 번째 테이블
           if (i < zones!.length)
-            _buildTableWithHeader(zones![i]['circumstance'], zones![i]['opsData']),
+            _buildTableWithHeader(zones![i]['circumstance'], zones![i]),
           const SizedBox(width: 150), // 테이블 간 간격
           // 두 번째 테이블
           if (i + 1 < zones!.length)
-            _buildTableWithHeader(zones![i + 1]['circumstance'], zones![i + 1]['opsData']),
+            _buildTableWithHeader(zones![i + 1]['circumstance'], zones![i + 1]),
         ],
       ),
     );
@@ -308,12 +332,21 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
     ),
   );
 
-  Color _getBackgroundColor(double? value) {
+  Color _getBackgroundColor (double? value) {
     if (value == null) return Colors.white;
-    if (value <= 0.5) { 
+    if (value < 0.25) {
       return coldColor; // Cold Zone
+    } else if (value >= 0.25 && value <= 1.0) {
+      double intensity = (value - 0.25) / (1.0 - 0.25); // Normalize intensity
+      return Color.lerp(
+        const Color.fromARGB(255, 247, 192, 192), // Base warm color
+        hotColor, // Hot color
+        intensity,
+      )!;
+    } else if (value > 1 && value < 50) {
+      return coldColor;
     } else {
-      double intensity = (value - 0.5) / (1.0 - 0.5); // Normalize intensity
+      double intensity = (value - 50) / (100 - 50); // Normalize intensity
       return Color.lerp(
         const Color.fromARGB(255, 247, 192, 192), // Base warm color
         hotColor, // Hot color
@@ -382,50 +415,40 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
     );
   }
 
-  Future<String?> fetchPlayerAnalysis(String name) async {
-  final url = 'http://localhost:8080/pitcher/analysis/$name'; // API endpoint
-  try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes); // Decode response to handle UTF-8
-    } else {
-      throw Exception('Failed to load player analysis');
-    }
-  } catch (e) {
-    print('Error fetching player analysis: $e');
-    return null;
-  }
+// Widget for displaying analysis
+  Widget _buildPlayerAnalysisBox(String analysis) {
+  return Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Container(
+      width: 940,
+      padding: const EdgeInsets.all(35),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: burgundy),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        analysis,
+        style: GoogleFonts.beVietnamPro(fontSize: 16),
+        textAlign: TextAlign.left,
+      ),
+    ),
+  );
 }
 
-// Widget for displaying analysis
-  Widget _buildPlayerAnalysisBox(String? analysis) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      child: Container(
-        width: 940,
-        padding: const EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: burgundy, width: 1),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: burgundy.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Text(
-          analysis ?? '분석 데이터를 불러오는 데 실패했습니다.',
-          style: GoogleFonts.beVietnamPro(
-            fontSize: 15,
-            fontWeight: FontWeight.normal,
-            color: Colors.black87,
-          ),
-          textAlign: TextAlign.left,
-        ),
-      ),
-    );
+Future<String> fetchPlayerType(String playerName) async {
+    const urlBase = 'http://localhost:8080/player/type/'; // API 엔드포인트
+    try {
+      final response = await http.get(Uri.parse('$urlBase$playerName'));
+
+      if (response.statusCode == 200) {
+        return response.body; // 'batter' 또는 'pitcher' 반환
+      } else {
+        throw Exception('Failed to fetch player type');
+      }
+    } catch (e) {
+      print('Error fetching player type: $e');
+      return '';
+    }
   }
 }

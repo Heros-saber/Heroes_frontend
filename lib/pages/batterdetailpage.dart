@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heroessaber/pages/battersearchresultspage.dart';
+import 'package:heroessaber/pages/pitchersearchresultspage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -118,17 +119,32 @@ class _BatterDetailPage extends State<BatterDetailPage> {
                   const SizedBox(width: 50),
                   // 검색창
                   SizedBox(
-                    width: 300,
-                    child: TextField(
-                      onSubmitted: (value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BatterSearchResultsPage(query: value),
-                          ),
-                        );
+                  width: 300,
+                  child: TextField(
+                    onSubmitted: (value) async {
+                        final playerType = await fetchPlayerType(value);
+
+                        if (playerType == 'batter') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BatterSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else if (playerType == 'pitcher') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PitcherSearchResultsPage(query: value),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('해당 선수를 찾을 수 없습니다.')),
+                          );
+                        }
                       },
-                      decoration: InputDecoration(
+                    decoration: InputDecoration(
                         hintText: '선수 이름을 검색하세요',
                         prefixIcon: const Icon(Icons.search, color: burgundy),
                         border: OutlineInputBorder(
@@ -140,8 +156,8 @@ class _BatterDetailPage extends State<BatterDetailPage> {
                         ),
                         contentPadding: const EdgeInsets.all(8),
                       ),
-                    ),
                   ),
+                ),
                 ],
               ),
             ),
@@ -171,11 +187,25 @@ class _BatterDetailPage extends State<BatterDetailPage> {
                                 width: 150,
                               ),
                           const SizedBox(width: 250),
-                          Image.asset(
-                            playerInfo?['team'] == '키움' ? 'assets/player_img.png' : 'assets/Name.png', // 선수 이미지
-                            width: 250,
-                            height: 250,
-                          ),
+                          // 선수 이미지 표시
+                              playerInfo?['playerImage'] != null
+                                  ? Image.network(
+                                      playerInfo!['playerImage'], // JSON 데이터에서 가져온 이미지 URL
+                                      width: 200,
+                                      height: 200,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/Name.png', // 로드 실패 시 기본 이미지
+                                          width: 200,
+                                          height: 200,
+                                        );
+                                      },
+                                    )
+                                  : Image.asset(
+                                      'assets/Name.png', // playerImage가 null일 경우 기본 이미지
+                                      width: 200,
+                                      height: 200,
+                                    ),
                           const SizedBox(width: 200),
                           if (playerInfo?['team'] == '키움')
                               Image.asset(
@@ -406,4 +436,20 @@ Widget _buildPlayerAnalysisBox(String analysis) {
     ),
   );
 }
+
+Future<String> fetchPlayerType(String playerName) async {
+    const urlBase = 'http://localhost:8080/player/type/'; // API 엔드포인트
+    try {
+      final response = await http.get(Uri.parse('$urlBase$playerName'));
+
+      if (response.statusCode == 200) {
+        return response.body; // 'batter' 또는 'pitcher' 반환
+      } else {
+        throw Exception('Failed to fetch player type');
+      }
+    } catch (e) {
+      print('Error fetching player type: $e');
+      return '';
+    }
+  }
 }
