@@ -28,55 +28,70 @@
 </br>
 
 ## 2. DB 구성
-![image](image.png)
+![image](assets/image.png)
 https://www.erdcloud.com/d/3St2L5pv2v7HiftHE
 
 </br>
 
 ## 3. 기능 & 화면
 #### 메인 페이지
-![mainpage1](image-1.png)
-![mainpage2](image-2.png)
+![mainpage1](assets/image-1.png)
+![mainpage2](assets/image-2.png)
 > 각 월의 경기 결과와 현재 순위, 승, 패를 보여준다.
 
-![alt text](image-3.png)
+![alt text](assets/image-3.png)
 > OPS 기준 타자 순위, ERA 기준 투수 순위를 보여준다.
 
 ![alt text](image-4.png)
 > 다음 경기 결과와 히어로즈 관련 사이트들을 보여준다.
 
 #### 선수 기본 정보
+
 - 투수
 
-![alt text](image-6.png)
+![alt text](assets/image-6.png)
 > 키움 로고와 선수 이미지 및 선수 기본 정보를 보여준다.
 
-![alt text](image-7.png)
+![alt text](assets/image-7.png)
 > 1년간의 기록을 보여 준다. 더보기를 누르면 세부 정보 페이지로 이동한다.
 
-![alt text](image-8.png)
+![alt text](assets/image-8.png)
 > 대표적인 세부 스탯을 보여준다.
 
 - 타자
 
-![alt text](image-15.png)
+![alt text](assets/image-15.png)
 > 키움 로고와 선수 이미지 및 선수 기본 정보를 보여준다.
 
-![alt text](image-16.png)
+![alt text](assets/image-16.png)
 > 1년간의 기록을 보여 준다. 더보기를 누르면 세부 정보 페이지로 이동한다.
 
-![alt text](image-17.png)
+![alt text](assets/image-17.png)
 > 대표적인 세부 스탯을 보여준다.
 
 #### 선수 세부 정보
 - 투수
-![alt text](image-9.png)
-> 스탯을 바탕으로 한 분석 결과를 보여준다.
 
-![alt text](image-10.png)
-![alt text](image-11.png)
+![alt text](assets/image-9.png)
+> 스탯에 기반한 분석 결과를 보여준다.
+
+![alt text](assets/image-10.png)
+![alt text](assets/image-11.png)
+> 세부 스탯
+
+- 타자
+
+![alt text](assets/image-18.png)
+> 스탯에 기반한 분석 결과를 보여준다.
+
+![alt text](assets/image-19.png)
+![alt text](assets/image-20.png)
+![alt text](assets/image-21.png)
+![alt text](assets/image-22.png)
+![alt text](assets/image-23.png)
+![alt text](assets/image-24.png)
 > 세부 스탯
 
 #### 선수 등록
-![alt text](image-12.png)
+![alt text](assets/image-12.png)
 > 원하는 선수의 이름을 검색해 등록할 수 있다. 단, 2024 KBO 리그에서 뛴 선수에 한해서만 가능하며 동명이인은 불가하다.
