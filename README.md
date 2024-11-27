@@ -42,7 +42,7 @@ https://www.erdcloud.com/d/3St2L5pv2v7HiftHE
 ![alt text](assets/image-3.png)
 > OPS 기준 타자 순위, ERA 기준 투수 순위를 보여준다.
 
-![alt text](image-4.png)
+![alt text](assets/image-4.png)
 > 다음 경기 결과와 히어로즈 관련 사이트들을 보여준다.
 
 #### 선수 기본 정보
