@@ -21,6 +21,7 @@ class _BatterDetailPage extends State<BatterDetailPage> {
   Map<String, dynamic>? playerInfo;
   List<dynamic>? stats;
   List<dynamic>? zones;
+  String one_line_analysis = '';
   bool isLoading = true;
   String errorMessage = '';
 
@@ -28,6 +29,7 @@ class _BatterDetailPage extends State<BatterDetailPage> {
   void initState() {
     super.initState();
     fetchPlayerData(widget.query);
+    fetchPlayerAnalysis(widget.query);
   }
 
   Future<void> fetchPlayerData(String name) async {
@@ -38,8 +40,6 @@ class _BatterDetailPage extends State<BatterDetailPage> {
         final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           playerInfo = data['playerInfo'];
-          stats = data['stats'];
-          zones = _organizeOpsByCircumstance(data['groupedZones']);
         });
       } else {
         throw Exception('Failed to load player data');
@@ -49,20 +49,24 @@ class _BatterDetailPage extends State<BatterDetailPage> {
     }
   }
 
-  List<Map<String, dynamic>> _organizeOpsByCircumstance(Map<String, dynamic> groupedZones) {
-  List<Map<String, dynamic>> opsTables = [];
-  groupedZones.forEach((circumstance, entries) {
-    final opsEntry = entries.firstWhere((item) => item['tag'] == 'ops', orElse: () => null);
-    if (opsEntry != null) {
-      opsTables.add({
-        'circumstance': circumstance,
-        'opsData': opsEntry,
-      });
+  Future<void> fetchPlayerAnalysis(String name) async {
+  final url = 'http://localhost:8080/batter/analysis/$name'; // API endpoint
+  try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          stats = data['stats'];
+          zones = data['zoneStatDTO'];
+          one_line_analysis = data['one_line_analysis'] as String;
+        });
+      } else {  
+        throw Exception('Failed to load player data');
+      }
+    } catch (e) {
+      print('Error fetching player data: $e');
     }
-  });
-  return opsTables;
 }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,6 +217,8 @@ class _BatterDetailPage extends State<BatterDetailPage> {
                     ],
                   ),
                 ),
+                //  _buildShadowDivider(),
+                 _buildPlayerAnalysisBox(one_line_analysis),  
                 const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
                 // 상세 분석 섹션
                 _buildSideBySideTables(context),
@@ -233,7 +239,7 @@ Widget _buildSideBySideTables(BuildContext context) {
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: Colors.black,
-        ),
+        ),  
       ),
     );
   }
@@ -247,11 +253,11 @@ Widget _buildSideBySideTables(BuildContext context) {
         children: [
           // 첫 번째 테이블
           if (i < zones!.length)
-            _buildTableWithHeader(zones![i]['circumstance'], zones![i]['opsData']),
+            _buildTableWithHeader(zones![i]['circumstance'], zones![i]),
           const SizedBox(width: 150), // 테이블 간 간격
           // 두 번째 테이블
           if (i + 1 < zones!.length)
-            _buildTableWithHeader(zones![i + 1]['circumstance'], zones![i + 1]['opsData']),
+            _buildTableWithHeader(zones![i + 1]['circumstance'], zones![i + 1]),
         ],
       ),
     );
@@ -296,12 +302,21 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
     ),
   );
 
-  Color _getBackgroundColor(double? value) {
+  Color _getBackgroundColor (double? value) {
     if (value == null) return Colors.white;
-    if (value < 0.7) {
+    if (value < 0.25) {
       return coldColor; // Cold Zone
+    } else if (value >= 0.25 && value <= 1.0) {
+      double intensity = (value - 0.25) / (1.0 - 0.25); // Normalize intensity
+      return Color.lerp(
+        const Color.fromARGB(255, 247, 192, 192), // Base warm color
+        hotColor, // Hot color
+        intensity,
+      )!;
+    } else if (value > 1 && value < 50) {
+      return coldColor;
     } else {
-      double intensity = (value - 0.7) / (1.0 - 0.7); // Normalize intensity
+      double intensity = (value - 50) / (100 - 50); // Normalize intensity
       return Color.lerp(
         const Color.fromARGB(255, 247, 192, 192), // Base warm color
         hotColor, // Hot color
@@ -334,7 +349,7 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
                   alignment: Alignment.center,
                   color: _getBackgroundColor(value),
                   child: Text(
-                    value?.toStringAsFixed(3) ?? '',
+                    value?.toStringAsFixed(2) ?? '',
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 14,
                       color: Colors.black,
@@ -370,4 +385,25 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
       ),
     );
   }
+
+// Widget for displaying analysis
+Widget _buildPlayerAnalysisBox(String analysis) {
+  return Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Container(
+      width: 940,
+      padding: const EdgeInsets.all(35),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: burgundy),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        analysis,
+        style: GoogleFonts.beVietnamPro(fontSize: 16),
+        textAlign: TextAlign.left,
+      ),
+    ),
+  );
+}
 }

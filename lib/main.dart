@@ -231,7 +231,7 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
                 ],
               ),
             ),
-            // 구분선
+             // 구분선
             const Divider(  
               color: burgundy,
               thickness: 1,
