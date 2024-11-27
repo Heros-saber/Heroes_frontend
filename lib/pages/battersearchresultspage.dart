@@ -172,11 +172,26 @@ class _BatterSearchResultsPageState extends State<BatterSearchResultsPage> {
                                 width: 150,
                               ),
                             const SizedBox(width: 250),
-                            Image.asset(
-                              playerInfo?['team'] == '키움' ? 'assets/player_img.png' : 'assets/Name.png', // 선수 이미지
-                              width: 250,
-                              height: 250,
-                            ),
+                            // 선수 이미지 표시
+                              playerInfo?['playerImage'] != null
+                                  ? Image.network(
+                                      playerInfo!['playerImage'], // JSON 데이터에서 가져온 이미지 URL
+                                      width: 200,
+                                      height: 200,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/Name.png', // 로드 실패 시 기본 이미지
+                                          width: 200,
+                                          height: 200,
+                                        );
+                                      },
+                                    )
+                                  : Image.asset(
+                                      'assets/Name.png', // playerImage가 null일 경우 기본 이미지
+                                      width: 200,
+                                      height: 200,
+                                    ),
+
                             const SizedBox(width: 200),
                             if (playerInfo?['team'] == '키움')
                               Image.asset(

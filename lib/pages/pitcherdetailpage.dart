@@ -213,6 +213,18 @@ class _PitcherDetailPage extends State<PitcherDetailPage> {
                     ],
                   ),
                 ),
+                FutureBuilder<String?>(
+                  future: fetchPlayerAnalysis(widget.query), // Fetch analysis data
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return _buildPlayerAnalysisBox('분석 데이터를 불러오는 데 실패했습니다.');
+                    } else {
+                      return _buildPlayerAnalysisBox(snapshot.data); // Display analysis
+                    }
+                  },
+                ),
                 const SizedBox(height: 50), // 상단과 상세 분석 사이 여백
                 // 상세 분석 섹션
                 _buildSideBySideTables(context),
@@ -366,6 +378,53 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
             spreadRadius: 0, // 그림자의 확산 정도
           ),
         ],
+      ),
+    );
+  }
+
+  Future<String?> fetchPlayerAnalysis(String name) async {
+  final url = 'http://localhost:8080/pitcher/analysis/$name'; // API endpoint
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return utf8.decode(response.bodyBytes); // Decode response to handle UTF-8
+    } else {
+      throw Exception('Failed to load player analysis');
+    }
+  } catch (e) {
+    print('Error fetching player analysis: $e');
+    return null;
+  }
+}
+
+// Widget for displaying analysis
+  Widget _buildPlayerAnalysisBox(String? analysis) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Container(
+        width: 940,
+        padding: const EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: burgundy, width: 1),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: burgundy.withOpacity(0.2),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Text(
+          analysis ?? '분석 데이터를 불러오는 데 실패했습니다.',
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 15,
+            fontWeight: FontWeight.normal,
+            color: Colors.black87,
+          ),
+          textAlign: TextAlign.left,
+        ),
       ),
     );
   }
