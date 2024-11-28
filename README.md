@@ -76,7 +76,10 @@ https://www.erdcloud.com/d/3St2L5pv2v7HiftHE
 > 스탯에 기반한 분석 결과를 보여준다.
 
 ![alt text](assets/image-10.png)
-![alt text](assets/image-11.png)
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
 > 세부 스탯
 
 - 타자
