@@ -186,11 +186,13 @@ class _PitcherSearchResultsPageState extends State<PitcherSearchResultsPage> {
                                         );
                                       },
                                     )
-                                  : Image.asset(
-                                      'assets/Name.png', // playerImage가 null일 경우 기본 이미지
+                                  : Center(
+                                    child: Image.asset(
+                                      'assets/default.png', // playerImage가 null일 경우 기본 이미지
                                       width: 200,
                                       height: 200,
                                     ),
+                                  ),
                             const SizedBox(width: 200),
                             if (playerInfo?['team'] == '키움')
                               Image.asset(

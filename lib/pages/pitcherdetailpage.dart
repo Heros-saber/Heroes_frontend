@@ -202,11 +202,13 @@ Future<void> fetchPlayerAnalysis(String name) async {
                                         );
                                       },
                                     )
-                                  : Image.asset(
-                                      'assets/Name.png', // playerImage가 null일 경우 기본 이미지
+                                  : Center(
+                                    child: Image.asset(
+                                      'assets/default.png', // playerImage가 null일 경우 기본 이미지
                                       width: 200,
                                       height: 200,
                                     ),
+                                  ),
                           const SizedBox(width: 200),
                           if (playerInfo?['team'] == '키움')
                               Image.asset(
@@ -332,29 +334,6 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
       },
     ),
   );
-
-  // Color _getBackgroundColor (double? value) {
-  //   if (value == null) return Colors.white;
-  //   if (value < 0.25) {
-  //     return coldColor; // Cold Zone
-  //   } else if (value >= 0.25 && value <= 1.0) {
-  //     double intensity = (value - 0.25) / (1.0 - 0.25); // Normalize intensity
-  //     return Color.lerp(
-  //       const Color.fromARGB(255, 247, 192, 192), // Base warm color
-  //       hotColor, // Hot color
-  //       intensity,
-  //     )!;
-  //   } else if (value > 1 && value < 4) {
-  //     return coldColor;
-  //   } else {
-  //     double intensity = (value - 4) / (8 - 4); // Normalize intensity
-  //     return Color.lerp(
-  //       const Color.fromARGB(255, 247, 192, 192), // Base warm color
-  //       hotColor, // Hot color
-  //       intensity,
-  //     )!;
-  //   }
-  // }
 
   Color _getBackgroundColor(double? value, String tag) {
   if (value == null) return Colors.white;
