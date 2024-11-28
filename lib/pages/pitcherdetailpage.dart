@@ -319,6 +319,7 @@ Widget _buildTableWithHeader(String title, Map<String, dynamic> opsData) {
 Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
   const double tableSize = 380; // Table total size
   const double cellSize = tableSize / 5; // Each cell size
+  String tag = opsData['tag'];
 
   // Preprocess data into a 5x5 list
   List<List<double?>> tableData = List.generate(
@@ -332,21 +333,50 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
     ),
   );
 
-  Color _getBackgroundColor (double? value) {
-    if (value == null) return Colors.white;
+  // Color _getBackgroundColor (double? value) {
+  //   if (value == null) return Colors.white;
+  //   if (value < 0.25) {
+  //     return coldColor; // Cold Zone
+  //   } else if (value >= 0.25 && value <= 1.0) {
+  //     double intensity = (value - 0.25) / (1.0 - 0.25); // Normalize intensity
+  //     return Color.lerp(
+  //       const Color.fromARGB(255, 247, 192, 192), // Base warm color
+  //       hotColor, // Hot color
+  //       intensity,
+  //     )!;
+  //   } else if (value > 1 && value < 4) {
+  //     return coldColor;
+  //   } else {
+  //     double intensity = (value - 4) / (8 - 4); // Normalize intensity
+  //     return Color.lerp(
+  //       const Color.fromARGB(255, 247, 192, 192), // Base warm color
+  //       hotColor, // Hot color
+  //       intensity,
+  //     )!;
+  //   }
+  // }
+
+  Color _getBackgroundColor(double? value, String tag) {
+  if (value == null) return Colors.white;
+
+  if (tag == '피안타율') {
+    // 피안타율 기준
     if (value < 0.25) {
       return coldColor; // Cold Zone
-    } else if (value >= 0.25 && value <= 1.0) {
+    } else {
       double intensity = (value - 0.25) / (1.0 - 0.25); // Normalize intensity
       return Color.lerp(
         const Color.fromARGB(255, 247, 192, 192), // Base warm color
         hotColor, // Hot color
         intensity,
       )!;
-    } else if (value > 1 && value < 50) {
-      return coldColor;
+    }
+  } else if (tag == '구사율') {
+    // 구사율 기준
+    if (value < 4) {
+      return coldColor; // Cold Zone
     } else {
-      double intensity = (value - 50) / (100 - 50); // Normalize intensity
+      double intensity = (value - 4) / (8 - 4); // Normalize intensity
       return Color.lerp(
         const Color.fromARGB(255, 247, 192, 192), // Base warm color
         hotColor, // Hot color
@@ -354,6 +384,9 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
       )!;
     }
   }
+
+  return Colors.white; // Default color for unsupported tags
+}
 
   // Build the table UI
   return Container(
@@ -377,7 +410,7 @@ Widget _buildDynamic5x5TableFromOps(Map<String, dynamic> opsData) {
                   width: cellSize,
                   height: cellSize,
                   alignment: Alignment.center,
-                  color: _getBackgroundColor(value),
+                  color: _getBackgroundColor(value, tag),
                   child: Text(
                     value?.toStringAsFixed(3) ?? '',
                     style: GoogleFonts.beVietnamPro(

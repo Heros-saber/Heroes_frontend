@@ -421,7 +421,7 @@ Map<DateTime, List<GameResult>> groupByDate(List<GameResult> results) {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: burgundy, width: 1),
       ),
-      child: Column(
+      child: Column(  
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
