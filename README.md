@@ -11,7 +11,7 @@
   <tbody>
     <tr>
       <td align="center"  width="16.66%"><a href="https://github.com/Johyeonwoooooooo"><img src="https://avatars.githubusercontent.com/u/130330546?v=4" width="100px;" alt="조현우"/><br /><sub><b>조현우</b></sub></a><br />BackEnd, Crawling</td>
-        <td align="center"  width="16.66%"><a href="https://github.com/dabeann"><img src="https://avatars.githubusercontent.com/u/129532144?v=4" width="100px;" alt="장윤영"/><br /><sub><b>장윤영</b></sub></a><br />BackEnd, FrontEnd</td>
+        <td align="center"  width="16.66%"><a href="https://github.com/changyunyeong"><img src="https://avatars.githubusercontent.com/u/129532144?v=4" width="100px;" alt="장윤영"/><br /><sub><b>장윤영</b></sub></a><br />BackEnd, FrontEnd</td>
   </tbody>
 </table>
 
