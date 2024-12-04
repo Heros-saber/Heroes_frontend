@@ -28,7 +28,7 @@
 </br>
 
 ## 2. DB 구성
-![image](assets/image.png)
+![erd](assets/image.png)
 https://www.erdcloud.com/d/3St2L5pv2v7HiftHE
 
 </br>
